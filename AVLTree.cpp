@@ -20,9 +20,9 @@ AVLTree::~AVLTree() {
 }
 
 // insert function that makes use of its helper function
-void AVLTree::insert(int x) {
+void AVLTree::insert(int value) {
     // Root is made equal to what the helper function returns
-    root = insert(root, x);
+    root = insert(root, value);
 
     // Calls the balance function if there is an imbalance in the tree
     // Imbalance is defined as difference between right and left height of a node being greater than 1
@@ -35,19 +35,19 @@ void AVLTree::insert(int x) {
 }
 
 // Helper function for insert
-AVLNode* AVLTree::insert(AVLNode* root, int x) {
+AVLNode* AVLTree::insert(AVLNode* root, int value) {
     // If the root is null, a new instance of the AVLNode class is created and returned
     if (!root) {
-        AVLNode* root = new AVLNode(x);
+        AVLNode* root = new AVLNode(value);
         return root;
     }
     // Less than case
-    else if (root -> value > x) {
-        root -> left = insert(root -> left, x);
+    else if (root -> value > value) {
+        root -> left = insert(root -> left, value);
     }
     // Greater than case
-    else if (root -> value < x) {
-        root -> right = insert(root -> right, x);
+    else if (root -> value < value) {
+        root -> right = insert(root -> right, value);
     }
     // Checking if a node is unbalanced
     int leftHeight = height(root -> left);
@@ -59,9 +59,9 @@ AVLNode* AVLTree::insert(AVLNode* root, int x) {
 }
 
 // remove function that makes use of its helper function
-void AVLTree::remove(int x) {
+void AVLTree::remove(int value) {
     if (root) {
-        root = remove(root, x);
+        root = remove(root, value);
     }
     if (lowestUnbalanced) {
         balance();
@@ -70,8 +70,8 @@ void AVLTree::remove(int x) {
 }
 
 // Helper function for remove
-AVLNode* AVLTree::remove(AVLNode* root, int x) {
-    if (root -> value == x) {
+AVLNode* AVLTree::remove(AVLNode* root, int value) {
+    if (root -> value == value) {
         AVLNode* temp1 = root -> right;
         root = root -> left;
         if (root) {root -> right = temp1;}
@@ -80,13 +80,13 @@ AVLNode* AVLTree::remove(AVLNode* root, int x) {
     }
 
     // Less than case
-    if (root -> value > x && root -> left) {
-        root -> left = remove(root -> left, x);
+    if (root -> value > value && root -> left) {
+        root -> left = remove(root -> left, value);
     }
 
     //Greater than case
-    if (root -> value < x && root -> right) {
-        root -> right = remove(root -> right, x);
+    if (root -> value < value && root -> right) {
+        root -> right = remove(root -> right, value);
     }
 
     // Checking if a node is unbalanced
@@ -100,28 +100,59 @@ AVLNode* AVLTree::remove(AVLNode* root, int x) {
 
 // Prints the level order traversal of tree
 void AVLTree::printTree() {
-    std::queue<AVLNode*> myQueue;
-    if (root) {myQueue.push(root);}
-    std::vector<std::vector<int>> levels;
-    while (myQueue.size() > 0) {
-        std::vector<int> level;
-        int sizeOf = myQueue.size();
-        for (int i = 0; i < sizeOf; i++) {
-            AVLNode* toPrint = myQueue.front();
-            myQueue.pop();
-            level.push_back(toPrint -> value);
-            if (toPrint -> left) {myQueue.push(toPrint -> left);}
-            if (toPrint -> right) {myQueue.push(toPrint -> right);}
-        }
-        levels.push_back(level);
+    std::queue<AVLNode*> nodes;
+    std::queue<int> levels;
+    if (root) {
+        nodes.push(root);
+        levels.push(0);
     }
-    for (int i = 0; i < levels.size(); i++) {
-        std::cout << "Level " << i << ": ";
-        for (int j = 0; j < levels[i].size(); j++) {
-            std::cout << levels[i][j] << " ";
+    int prevLevel = 0;
+    std::cout << "Level 0: ";
+    while (nodes.size()) {
+        AVLNode* curNode = nodes.front();
+        int curLevel = levels.front();
+        if (curNode -> left) {
+            nodes.push(curNode -> left);
+            levels.push(curLevel + 1);
         }
-        std::cout << "\n";
+        if (curNode -> right) {
+            nodes.push(curNode -> right);
+            levels.push(curLevel + 1);
+        }
+        int toPrint = nodes.front() -> value;
+        int levelAt = levels.front();
+        if (levelAt != prevLevel) {
+            std::cout << "\nLevel " << levelAt << ": ";
+            prevLevel = levelAt;
+        }
+        std::cout << toPrint << " ";
+        nodes.pop();
+        levels.pop();
     }
+    std::cout << "\n";
+}
+
+// exists function that makes use of its helper funtion
+bool AVLTree::exists(int value) {
+    return exists(root, value);
+}
+
+// Helper function for exists
+// Checks if given value exists in the tree
+bool AVLTree::exists(AVLNode* root, int value) {
+    if (!root) {
+        return false;
+    }
+    if (root -> value == value) {
+        return true;
+    }
+    else if (root -> value > value) {
+        return exists(root -> left, value);
+    }
+    else if (root -> value < value) {
+        return exists(root -> right, value);
+    }
+    return false;
 }
 
 // Recursive function to return the height of each node

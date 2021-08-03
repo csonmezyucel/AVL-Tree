@@ -7,13 +7,15 @@ class AVLTree {
 public:
     AVLTree();
     ~AVLTree();
-    void insert(int x);
-    void remove(int x);
+    void insert(int value);
+    void remove(int value);
     void printTree();
+    bool exists(int value);
 
 private:
-    AVLNode* insert(AVLNode* root, int x);
-    AVLNode* remove(AVLNode* root, int x);
+    bool exists(AVLNode* root, int value);
+    AVLNode* insert(AVLNode* root, int value);
+    AVLNode* remove(AVLNode* root, int value);
     void balance();
     int height(AVLNode* node);
     AVLNode* rotateLeft(AVLNode* root);
